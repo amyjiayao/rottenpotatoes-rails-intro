@@ -15,13 +15,23 @@ class MoviesController < ApplicationController
     order = params[:order]
     @all_ratings = Movie.all_ratings
     ratings = params[:ratings]
-    @ratings = ratings.nil? ? Movie.all_ratings : ratings.keys	
-	if params[:sort]=="title"
-		@movies = Movie.all.order(:title).where('rating IN (?)', @ratings).all
-	elsif params[:sort]=="release_date"
-		@movies = Movie.all.order(:release_date).where('rating IN (?)', @ratings).all
+	if params[:ratings]
+      session[:ratings] = params[:ratings]
+      @checked_ratings = params[:ratings]
+    else session[:ratings]
+      @checked_ratings = session[:ratings]
+    end
+	
+	if params[:sort] == 'title'
+		session[:sort] = 'title'
+		@movies = Movie.order(:title).where(rating: @checked_ratings.keys)
+	elsif params[:sort] == 'release_date'
+		session[:sort] = 'release_date'
+		@movies = Movie.order(:release_date).where(rating: @checked_ratings.keys)
+	elsif session[:sort]
+		redirect_to movies_path(sort: session[:sort], rating: @checked_ratings.keys)
 	else
-		@movies = Movie.where('rating IN (?)', @ratings).all
+		@movies = Movie.where(rating: @checked_ratings.keys)
 	end
   end
 
