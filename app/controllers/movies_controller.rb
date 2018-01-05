@@ -18,8 +18,10 @@ class MoviesController < ApplicationController
 	if params[:ratings]
       session[:ratings] = params[:ratings]
       @checked_ratings = params[:ratings]
-    else session[:ratings]
+    elsif session[:ratings]
       @checked_ratings = session[:ratings]
+    else
+      @checked_ratings = Hash[@all_ratings.zip([1,1,1,1])]
     end
 	
 	if params[:sort] == 'title'
